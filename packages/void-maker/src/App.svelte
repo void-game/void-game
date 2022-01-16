@@ -16,9 +16,14 @@
 		b: number,
 		a: number,
 	}
+
+	interface GridCell {
+		color: Color,
+		borderColor: Color,
+	}
 	
 	interface ColorGrid {
-		grid: Color[][],
+		grid: GridCell[][],
 		height: number,
 		width: number,
 	}
@@ -45,7 +50,10 @@
 	function initializeGrid() {
 		for (let i = 0; i < colorGrid.height; i++) {
 			for (let j = 0; j < colorGrid.width; j++) {
-				colorGrid.grid[i][j] = selectedColor;
+				colorGrid.grid[i][j] = {
+					color: selectedColor,
+					borderColor: {r: 0, g: 0, b: 0, a: 0},
+				};
 			}
 		}
 	}
@@ -54,7 +62,7 @@
 	function clearGrid() {
 		for (let i = 0; i < colorGrid.height; i++) {
 			for (let j = 0; j < colorGrid.width; j++) {
-				colorGrid.grid[i][j] = {r: 255, g: 255, b: 255, a: 1};
+				colorGrid.grid[i][j] = {...colorGrid.grid[i][j], color: {r: 255, g: 255, b: 255, a: 1}};
 			}
 		}
 	}
@@ -80,7 +88,10 @@
 		debug && debugFunc();
 
 		currentIndex = {x,y};
-		colorGrid.grid[x][y] = selectedColor;
+		colorGrid.grid[x][y] = {
+			...colorGrid.grid[x][y],
+			color: selectedColor,
+		}
 	}
 
 	interface HState {
@@ -108,6 +119,12 @@
 		}
 	}
 
+	function onMouseEnter(x: number, y: number) {
+		if (highlightState.down) {
+
+		}
+	}
+
 	function highlightSection(hState: HState) {
 		if (hState.indOne && hState.indTwo) {
 			const {x: x1, y: y1} = hState.indOne;
@@ -119,7 +136,10 @@
 
 			for (let i = xMin; i <= xMax; i++) {
 				for (let j = yMin; j <= yMax; j++) {
-					colorGrid.grid[i][j] = selectedColor;
+					colorGrid.grid[i][j] = {
+						color: selectedColor,
+						borderColor: {r: 0, g: 0, b: 0, a: 1},
+					}
 				}
 			}
 		}
@@ -176,13 +196,18 @@
 		{#each {length: colorGrid.height} as _, i}
 			<div class="row">
 				{#each {length: colorGrid.width} as _, j}
-					<div on:mousedown|preventDefault={() => onMouseDown(i,j)} on:mouseup={() => onMouseUp(i,j)} on:click|self={() => onCellSelected(i,j) } 
+					<div 
+						on:mousedown|preventDefault={() => onMouseDown(i,j)} 
+						on:mouseup={() => onMouseUp(i,j)} 
+						on:click|self={() => onCellSelected(i,j)}
+						on:mouseenter={() => {}}
 						class="block"
 						style="background-color: rgba(
-							{colorGrid.grid[i][j].r},
-							{colorGrid.grid[i][j].g},
-							{colorGrid.grid[i][j].b},
-							{colorGrid.grid[i][j].a})">
+							{colorGrid.grid[i][j].color.r},
+							{colorGrid.grid[i][j].color.g},
+							{colorGrid.grid[i][j].color.b},
+							{colorGrid.grid[i][j].color.a})"
+							>
 					</div>
 				{/each}
 			</div>
