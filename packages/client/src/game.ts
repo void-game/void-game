@@ -1,20 +1,20 @@
-import Entity from "./entities/entitity.interface";
-import Screen from "./screen/screen";
-import { registerKeyEvents } from "./keys/onKeyDown";
-import Server from "./server/Server";
+import { Entity } from '@core';
+import Screen from './screen/screen';
+import { registerKeyEvents } from './keys/onKeyDown';
+import Server from './server/Server';
 
 export interface GameSettings {
-  showFPS: boolean,
-  targetFPS: number
+  showFPS: boolean;
+  targetFPS: number;
 }
 
 interface RenderState {
   secondsPassed: number;
-  previousTimeStamp: DOMHighResTimeStamp | null; 
+  previousTimeStamp: DOMHighResTimeStamp | null;
 }
 
 interface GameState {
-  entities: Entity[],
+  entities: Entity[];
 }
 
 class Game {
@@ -37,7 +37,7 @@ class Game {
     this.state = {
       entities: this.server.entities,
     };
-    
+
     this.renderState = {
       secondsPassed: 0,
       previousTimeStamp: null,
@@ -45,7 +45,7 @@ class Game {
 
     this.server.server.on('entities', (entities: Entity[]) => {
       this.state.entities = entities;
-    })
+    });
 
     registerKeyEvents(this.server);
 
@@ -69,7 +69,7 @@ class Game {
     this.screen.draw(this.state.entities, fps);
 
     window.requestAnimationFrame(this.gameLoop);
-  }
+  };
 }
 
 export default Game;
