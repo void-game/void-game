@@ -10,6 +10,7 @@ export interface EntityState {
     y: number;
   };
   speed: number;
+  screenKey: string;
 }
 
 export interface Entity {

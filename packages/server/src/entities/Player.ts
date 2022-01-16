@@ -11,6 +11,7 @@ export class Player implements Entity {
     speed = 100,
     position: { x = 0, y = 0 },
     size: { height = 20, width = 20 },
+    screenKey,
   }: EntityState) {
     this.state = {
       name,
@@ -18,6 +19,7 @@ export class Player implements Entity {
       speed,
       position: { x, y },
       size: { height, width },
+      screenKey,
     };
   }
 

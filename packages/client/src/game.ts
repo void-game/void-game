@@ -43,7 +43,7 @@ class Game {
       previousTimeStamp: null,
     };
 
-    this.server.server.on('entities', (entities: Entity[]) => {
+    this.server.socket.on('entities', (entities: Entity[]) => {
       this.state.entities = entities;
     });
 

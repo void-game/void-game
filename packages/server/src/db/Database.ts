@@ -5,12 +5,13 @@ interface Position {
   y: number;
 }
 
-interface SavedPlayer {
+export interface SavedPlayer {
   id: string;
   username: string;
   passwordDigest: string;
   color: string;
   position: Position;
+  screenKey: string;
 }
 
 const defaultPosition: Position = {
@@ -50,14 +51,17 @@ export class Database {
         username,
         color: color || 'blue',
         position: defaultPosition,
+        screenKey: '0,0,0',
       };
 
       this.save(savedPlayer);
+
       return savedPlayer;
     }
   }
 
   getPlayerById(id: string) {
+    console.log(id, this._players);
     return this._players[id];
   }
 

@@ -31,7 +31,7 @@ const registerKeyEvents = (server: Server) => {
       }
     }
 
-    server.server.emit('keyDown', { isPressed });
+    server.socket.emit('keys', { isPressed });
   };
 
   document.onkeyup = (e: KeyboardEvent) => {
@@ -56,7 +56,7 @@ const registerKeyEvents = (server: Server) => {
       }
     }
 
-    server.server.emit('keyDown', { isPressed });
+    server.socket.emit('keys', { isPressed });
   };
 };
 
