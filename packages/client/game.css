@@ -1,0 +1,19 @@
+
+
+:root {
+  --atomic-purple: #6c5bdd;
+  --gameboy-grey: #d1cfd8;
+  background-color: var(--atomic-purple); 
+}
+
+
+h1 {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 8px 0 0 0; 
+  font-size: 44px;
+  font-weight: bold;
+  font-family: arial;
+  color: var(--gameboy-grey);
+}

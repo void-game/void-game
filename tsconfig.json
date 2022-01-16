@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "noLib": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es6",
+    "sourceMap": true,
+    "module": "commonjs",
+    "jsx": "preserve",
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "baseUrl": "./packages",
+    "paths": {
+      "@core": ["core/index.ts"],
+      "@server/*": ["server/*"],
+      "@client/*": ["client/*"]
+    }
+  },
+  "exclude": ["node_modules", "**/*/lib", "**/*/dist"],
+  "references": [
+    { "path": "./packages/client" },
+    { "path": "./packages/server" },
+    { "path": "./packages/core" }
+  ]
+}
