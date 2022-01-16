@@ -1,174 +1,147 @@
-<script>
-	import HsvPicker from './Colors.svelte';
-	let states = [
-		{
-			name: 'Color',
-		},
-		{
-			name: 'Highlight',
-			highlightIndex: {pointOne: {x: 0, y: 0}, pointTwo: {x: 0, y: 0}},
-			selecting: "one",
-		}
-	];
-	let currState = states[0];
+<script lang="ts">
+	import HsvPicker from './components/ColorPicker.svelte';
+	import Button from './components/Button.svelte';
 
-	let selectedColor = {r: 0, g: 0, b: 0, a:0 };
-	let index = {x: 0, y: 0};
-	let mySavedGrid = null;
+	let debug = false;
 
-	let gridWidth = 10;
-	let gridHeight = 10;
-	
-	let grid = Array.from({length: gridHeight}, e => Array(gridWidth));
-	
-
-	for (let i = 0; i < gridHeight; i++) {
-		for (let j = 0; j < gridWidth; j++) {
-			grid[i][j] = {
-				color: {r: 0, g: 0, b: 0, a: 0},
-				border: "2px solid black",
-			};
-		}
-	}
-	
-	function colorCallback(rgba) {
-		selectedColor = rgba.detail;
+	function debugFunc() {
+			console.log('xx Color ', selectedColor); // eslint-disable-line
+			console.log(`xx Index ${currentIndex.x}, ${currentIndex.y}`); // eslint-disable-line
+			console.log('xx Grid ', colorGrid); // eslint-disable-line
 	}
 
-	function updateHighlightState(index) {
-		if (currState.selecting === "one") {
-			grid[currState.highlightIndex.pointOne.x][currState.highlightIndex.pointOne.y].border = "2px solid black";
-			currState.highlightIndex.pointOne = {x: index.x, y: index.y};
-			currState.selecting = "two"
-			grid[index.x][index.y].border = "2px solid red";
-		} else {
-			grid[currState.highlightIndex.pointTwo.x][currState.highlightIndex.pointTwo.y].border = "2px solid black";
-			currState.highlightIndex.pointTwo = {x: index.x, y: index.y};
-			currState.selecting = "one"
-			grid[index.x][index.y].border = "2px solid red";
-		}
+	interface Color {
+		r: number,
+		g: number, 
+		b: number,
+		a: number,
 	}
 	
-	function handleSelect(x,y) {
-		index = {x,y};
-		let s = selectedColor;
-		
-		if (currState === states[1]) {
-			updateHighlightState(index);
-		} else {
-			grid[x][y] = {...grid[x][y], color: {r: s.r, g: s.g, b: s.b, a: s.a}};
+	interface ColorGrid {
+		grid: Color[][],
+		height: number,
+		width: number,
+	}
+
+	let colorGrid: ColorGrid = {
+		grid: Array.from({length: 22}, e => Array(32)),
+		height: 10,
+		width: 10,
+	}
+
+	interface GridIndex {
+		x: number,
+		y: number,
+	}
+	
+	let currentIndex: GridIndex = {x: 0, y: 0};
+
+	// Currently Selected Color
+	let selectedColor: Color = {r: 255, g: 255, b: 255, a: 1};
+
+	// Currently Saved Grid
+	let currentSavedGrid = null;
+
+	function initializeGrid() {
+		for (let i = 0; i < colorGrid.height; i++) {
+			for (let j = 0; j < colorGrid.width; j++) {
+				colorGrid.grid[i][j] = selectedColor;
+			}
 		}
 	}
+	initializeGrid();
 	
 	function clearGrid() {
-		for (let i = 0; i < gridHeight; i++) {
-			for (let j = 0; j < gridWidth; j++) {
-				grid[i][j] = {
-					color: {r: 0, g: 0, b: 0, a: 0},
-					border: "2px solid black",
-				}
+		for (let i = 0; i < colorGrid.height; i++) {
+			for (let j = 0; j < colorGrid.width; j++) {
+				colorGrid.grid[i][j] = {r: 255, g: 255, b: 255, a: 1};
 			}
 		}
 	}
 	
 	function saveGrid() {
-		const currGrid = JSON.stringify(grid);
-		mySavedGrid = currGrid;
-		clearGrid();
+		const currGrid = JSON.stringify(colorGrid);
+		currentSavedGrid = currGrid;
 	}
 	
 	function loadGrid() {
-		if (mySavedGrid) {
-			const savedGrid = JSON.parse(mySavedGrid);
-			grid = savedGrid;
+		if (currentSavedGrid) {
+			const savedGrid = JSON.parse(currentSavedGrid);
+			colorGrid = savedGrid;
+		}
+	}
+
+	function colorCallback(rgba: any) {
+		selectedColor = rgba.detail;
+	}
+	
+	function onCellSelected(x: number, y: number) {
+		// DEBUG
+		debug && debugFunc();
+
+		currentIndex = {x,y};
+		colorGrid.grid[x][y] = selectedColor;
+	}
+
+	interface HState {
+		down: boolean,
+		indOne: null | {x: number, y: number},
+		indTwo: null | {x: number, y: number},
+	}
+
+	const highlightState = {
+		down: false,
+		indOne: null,
+		indTwo: null,
+	}
+
+	function onMouseDown(x: number, y: number) {
+		highlightState.indOne = {x, y};
+		highlightState.down = true;
+	}
+
+	function onMouseUp(x: number, y: number) {
+		if (highlightState.down) {
+			highlightState.indTwo = {x, y};
+			highlightSection(highlightState);
+			highlightState.down = false;
+		}
+	}
+
+	function highlightSection(hState: HState) {
+		if (hState.indOne && hState.indTwo) {
+			const {x: x1, y: y1} = hState.indOne;
+			const {x: x2, y: y2} = hState.indTwo;
+			const xMin = x1 < x2 ? x1 : x2;
+			const xMax = x1 < x2 ? x2 : x1;
+			const yMin = y1 < y2 ? y1 : y2;
+			const yMax = y1 < y2 ? y2 : y1;
+
+			for (let i = xMin; i <= xMax; i++) {
+				for (let j = yMin; j <= yMax; j++) {
+					colorGrid.grid[i][j] = selectedColor;
+				}
+			}
 		}
 	}
 
 
-	function switchState(state) {
-		currState = state;
-		clearGrid();
-	}
-	
 </script>
-
-
-
-<div>
-
-	<div class="mode-select">
-		<button on:click={() => switchState(states[0])} class="button {currState === states[0] ? 'button-highlight' : ''}">
-			Color
-		</button>
-		<button on:click={() => switchState(states[1])} class="button {currState === states[1] ? 'button-highlight' : ''}">
-			Highlight
-		</button>
-	</div>
-
-	
-		<div class="controls">
-			{#if currState === states[0]}
-				<button on:click={clearGrid} class="button">
-					Clear
-				</button>
-				<button on:click={saveGrid} class="button">
-					Save Layout
-				</button>
-				<button on:click={loadGrid} class="button">
-					Load Layout
-				</button>
-			{:else if currState === states[1]}
-				<p>point one => x: {currState.highlightIndex.pointOne.x}, y: {currState.highlightIndex.pointOne.y}</p>
-				<p>point two => y: {currState.highlightIndex.pointTwo.x}, y: {currState.highlightIndex.pointTwo.y}</p>
-				<p>Selecting <b>{currState.selecting}</b></p>
-				<button>Select Section</button>
-			{/if}
-		</div>
-
-	<div class="controls">
-		
-	</div>
-	<div style="margin: 0px 20px">
-		{#each {length: gridHeight} as _, i}
-		<div class="row">
-			{#each {length: gridWidth} as _, j}
-			<div on:click|self={() => handleSelect(i,j)} 
-				class="block"
-				style="
-				background-color: rgba({grid[i][j].color.r}, {grid[i][j].color.g}, {grid[i][j].color.b}, {grid[i][j].color.a}); 
-				border: {grid[i][j].border}
-				"
-				>
-			</div>
-			{/each}
-		</div>
-		{/each}
-	</div>
-	
-	<HsvPicker on:colorChange={colorCallback} startColor={"#FBFBFB"}/>
-
-</div>
 	
 <style>
-	
-	.controls {
-		display: flex;
-		justify-content: space-around;
-		width: 900px;
+	:root {
+		background-color: rgb(88, 88, 136);
 	}
 
-	.button {
-		background-color: aliceblue;
-		color: black;
-		border-radius: 10px;
-		width: 200px;
-		margin: 10px;
+	.container {
+		display: flex;
+		height: 100vh;
+		width: 100%;
+		justify-content: center;
+		position: relative;
+		top: 10vh;
 	}
-	.button-highlight {
-		background-color: tomato;
-		color: white;
-	}
-	
+
 	.row {
 		display: flex;
 	}
@@ -178,10 +151,42 @@
 		width: 20px;
 		margin: 2px;
 		border-radius: 5px;
+		border: 2px solid black;
 	}
 
-
-
-
+	.block:hover {
+		transform: scale(1.1);
+		border-color: rgb(238, 101, 101);
+		cursor: pointer;
+	}
 
 </style>
+
+<div class="container">
+	
+	<div style="display: flex; flex-direction: column">
+		<Button text="Clear" on:onSelected={clearGrid} />
+		<Button text="Save" on:onSelected={saveGrid} />
+		<Button text="Load" on:onSelected={loadGrid} />
+	</div>
+
+	<HsvPicker on:colorChange={colorCallback} startColor={"#FBFBFB"}/>
+
+	<div style="margin: 0px 20px">
+		{#each {length: colorGrid.height} as _, i}
+			<div class="row">
+				{#each {length: colorGrid.width} as _, j}
+					<div on:mousedown|preventDefault={() => onMouseDown(i,j)} on:mouseup={() => onMouseUp(i,j)} on:click|self={() => onCellSelected(i,j) } 
+						class="block"
+						style="background-color: rgba(
+							{colorGrid.grid[i][j].r},
+							{colorGrid.grid[i][j].g},
+							{colorGrid.grid[i][j].b},
+							{colorGrid.grid[i][j].a})">
+					</div>
+				{/each}
+			</div>
+		{/each}
+	</div>
+
+</div>

@@ -19,16 +19,13 @@ class Player {
                 this.state.position.y += speed;
             }
         };
-        this._state = {
+        this.state = {
             name,
             color,
             speed,
             position: { x, y },
             size: { height, width },
         };
-    }
-    get state() {
-        return this._state;
     }
 }
 exports.Player = Player;

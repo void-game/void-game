@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client'
-import Entity from '../entities/entitity.interface'
+import { Entity } from '@core'
 
 class Server {
   private _server: Socket
