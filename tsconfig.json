@@ -18,7 +18,7 @@
     "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "baseUrl": "./packages",
     "paths": {
       "@core": ["core/index.ts"],
@@ -27,9 +27,5 @@
     }
   },
   "exclude": ["node_modules", "**/*/lib", "**/*/dist"],
-  "references": [
-    { "path": "./packages/client" },
-    { "path": "./packages/server" },
-    { "path": "./packages/core" }
-  ]
+  "references": [{ "path": "./packages/core" }]
 }

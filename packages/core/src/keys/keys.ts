@@ -1,4 +1,4 @@
-enum Keys {
+const enum Keys {
   RIGHT = 'right',
   LEFT = 'left',
   DOWN = 'down',
