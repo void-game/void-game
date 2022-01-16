@@ -1,10 +1,11 @@
+import 'module-alias/register';
 import { Server } from 'socket.io';
 import express from 'express';
-import { Entity } from '../core';
-import { Player } from './src/entity';
+import { Entity, Keys } from '@core';
+import { Player } from './entities';
 import cors from 'cors';
 import { setInterval } from 'timers';
-import Database from './src/Database';
+import { Database } from './db';
 
 const HOST = '0.0.0.0';
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -24,14 +25,6 @@ app.use(
 );
 
 app.use(express.json());
-
-export enum Keys {
-  RIGHT = 'right',
-  LEFT = 'left',
-  DOWN = 'down',
-  UP = 'up',
-  SPRINT = 'sprint',
-}
 
 const isPressed = {
   [Keys.RIGHT]: false,

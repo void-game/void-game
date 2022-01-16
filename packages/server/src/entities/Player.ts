@@ -1,4 +1,4 @@
-import { EntityState, Entity } from '@core';
+import { EntityState, Entity, Keys } from '@core';
 
 const SPRINT_SPEED = 4;
 
@@ -24,19 +24,19 @@ export class Player implements Entity {
   update = (keys: any) => {
     const speed = keys.isPressed.sprint ? SPRINT_SPEED : this.state.speed;
 
-    if (keys.isPressed.left) {
+    if (keys.isPressed[Keys.LEFT]) {
       this.state.position.x -= speed;
     }
 
-    if (keys.isPressed.right) {
+    if (keys.isPressed[Keys.RIGHT]) {
       this.state.position.x += speed;
     }
 
-    if (keys.isPressed.up) {
+    if (keys.isPressed[Keys.UP]) {
       this.state.position.y -= speed;
     }
 
-    if (keys.isPressed.down) {
+    if (keys.isPressed[Keys.DOWN]) {
       this.state.position.y += speed;
     }
   };

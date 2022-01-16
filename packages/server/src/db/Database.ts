@@ -1,16 +1,16 @@
 import bcrypt from 'bcrypt';
 
 interface Position {
-    x: number,
-    y: number,
+  x: number;
+  y: number;
 }
 
 interface SavedPlayer {
-  id: string,
-  username: string,
-  passwordDigest: string,
-  color: string,
-  position: Position,
+  id: string;
+  username: string;
+  passwordDigest: string;
+  color: string;
+  position: Position;
 }
 
 const defaultPosition: Position = {
@@ -18,19 +18,17 @@ const defaultPosition: Position = {
   y: 0,
 };
 
-
 export function makeid(length: number) {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
-  for ( let i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * 
-    charactersLength));
- }
- return result;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
 
-class Database {
+export class Database {
   private _players: { [key: string]: SavedPlayer } = {};
 
   async authenticate(username: string, password: string, color?: string) {
@@ -45,19 +43,19 @@ class Database {
     } else {
       const passwordDigest = await bcrypt.hash(password, 10);
       const id = makeid(10);
-      
+
       const savedPlayer: SavedPlayer = {
         id,
         passwordDigest,
         username,
         color: color || 'blue',
         position: defaultPosition,
-      }
+      };
 
       this.save(savedPlayer);
       return savedPlayer;
     }
-  };
+  }
 
   getPlayerById(id: string) {
     return this._players[id];
@@ -78,5 +76,3 @@ class Database {
     }
   }
 }
-
-export default Database;

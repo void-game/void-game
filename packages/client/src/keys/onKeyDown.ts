@@ -1,5 +1,5 @@
-import Server from "../server/Server";
-import keyMap, { Keys } from "./keys";
+import Server from '../server/Server';
+import { Keys, keyMap } from '@core';
 
 const isPressed = {
   [Keys.RIGHT]: false,
@@ -10,7 +10,7 @@ const isPressed = {
 
 const registerKeyEvents = (server: Server) => {
   document.onkeydown = (e: KeyboardEvent) => {
-    const key = ((keyMap as any)[e.keyCode]) as Keys | undefined;
+    const key = (keyMap as any)[e.keyCode] as Keys | undefined;
     if (key) {
       switch (key) {
         case Keys.RIGHT:
@@ -32,10 +32,10 @@ const registerKeyEvents = (server: Server) => {
     }
 
     server.server.emit('keyDown', { isPressed });
-  }
+  };
 
   document.onkeyup = (e: KeyboardEvent) => {
-    const key = ((keyMap as any)[e.keyCode]) as Keys | undefined;
+    const key = (keyMap as any)[e.keyCode] as Keys | undefined;
     if (key) {
       switch (key) {
         case Keys.RIGHT:
@@ -57,8 +57,8 @@ const registerKeyEvents = (server: Server) => {
     }
 
     server.server.emit('keyDown', { isPressed });
-  }
-}
+  };
+};
 
 const keys = { isPressed };
 export default keys;
