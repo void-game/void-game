@@ -1,4 +1,4 @@
-import Entity from '../entities/entitity.interface';
+import { Entity } from '@core';
 import screenState, { CellState } from './sampleScreen';
 
 class Screen {
@@ -54,6 +54,7 @@ class Screen {
   };
 
   renderEntity = (e: Entity) => {
+    console.log(e);
     // console.log('xx width, width * ratio', e.state.size.width, e.state.size.width * this.ratio); // eslint-disable-line
     this.context.fillStyle = e.state.color;
     this.context.fillRect(e.state.position.x, e.state.position.y, 54 * this.ratio, 54 * this.ratio);

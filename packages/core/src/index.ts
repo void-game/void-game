@@ -1,4 +1,2 @@
-export enum TileName {
-  DIRT,
-  GRASS
-}
+export * from './entities';
+export * from './environment';

@@ -1,46 +1,23 @@
-export interface EntityState {
-  name: string,
-  color: string,
-  size: {
-    height: number,
-    width: number,
-  },
-  position: {
-    x: number,
-    y: number,
-  },
-  speed: number,
-}
-
-export interface Entity {
-  state: EntityState,
-  update: (keys: any) => void,
-}
+import { EntityState, Entity } from '@core';
 
 const SPRINT_SPEED = 4;
 
 export class Player implements Entity {
   public state: EntityState;
 
-  constructor({ 
-    name = "Joe",
-    color = "blue",
+  constructor({
+    name = 'Joe',
+    color = 'blue',
     speed = 100,
-    position: {
-      x = 0,
-      y = 0
-    },
-    size: { 
-      height = 20,
-      width = 20
-    }
+    position: { x = 0, y = 0 },
+    size: { height = 20, width = 20 },
   }: EntityState) {
     this.state = {
       name,
       color,
       speed,
       position: { x, y },
-      size: { height, width }
+      size: { height, width },
     };
   }
 
@@ -62,5 +39,5 @@ export class Player implements Entity {
     if (keys.isPressed.down) {
       this.state.position.y += speed;
     }
-  }
+  };
 }

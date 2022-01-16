@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import express from 'express';
-import { Entity, Player } from './src/entity';
+import { Entity } from '../core';
+import { Player } from './src/entity';
 import cors from 'cors';
 import { setInterval } from 'timers';
 import Database from './src/Database';
@@ -16,12 +17,13 @@ const app = express();
 
 const db = new Database();
 
-app.use(cors({
-  origin: '*'
-}));
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 app.use(express.json());
-
 
 export enum Keys {
   RIGHT = 'right',
@@ -54,7 +56,6 @@ const server = app.listen(PORT, HOST, () => {
           c.emit('entities', entities);
         });
       }
-
     });
   }, 1000 / 120);
 });
@@ -63,31 +64,29 @@ function initWorld() {
   const io = new Server(server, {
     cors: {
       origin: '*',
-      methods: ["GET", "POST"]
-    }
+      methods: ['GET', 'POST'],
+    },
   });
-  
+
   const defaultPlayer = {
     speed: 1.5,
     position: {
       x: 0,
-      y:  0
+      y: 0,
     },
-    size: { 
+    size: {
       height: 20,
-      width:20,
-    }
+      width: 20,
+    },
   };
-  
+
   const updateEntities = () => {
     clients.forEach((c) => {
       c.emit('entities', entities);
     });
-  }
-  
+  };
+
   io.on('connection', (client) => {
-    
-    
     client.emit('entities', entities);
 
     client.on('join', (id: string) => {
@@ -102,10 +101,10 @@ function initWorld() {
         },
         position: savedPlayer.position,
         speed: 1.5,
-      }
+      };
 
       const player = new Player(playerToAdd);
-      
+
       players[client.id] = {};
       players[client.id].entity = player;
       players[client.id].keys = { isPressed };
@@ -116,41 +115,41 @@ function initWorld() {
       /* JASON LOG */ console.log('Players => ', players); // eslint-disable-line
 
       client.on('disconnect', () => {
-        entities = entities.filter((p) => p !== player); 
+        entities = entities.filter((p) => p !== player);
         clients = clients.filter((c) => c.id !== client.id);
 
         const passwordDigest = db.getPlayerById(id).passwordDigest;
-        db.save({ id, position: player.state.position, color: player.state.color, passwordDigest, username: player.state.name });
+        db.save({
+          id,
+          position: player.state.position,
+          color: player.state.color,
+          passwordDigest,
+          username: player.state.name,
+        });
 
         delete players[client.id];
         updateEntities();
         /* JASON LOG */ console.log('\nEntities => ', entities); // eslint-disable-line
         /* JASON LOG */ console.log('Players => ', players); // eslint-disable-line
-      })
-      
+      });
+
       client.on('keyDown', (keys: any) => {
         players[client.id].entity.update(keys);
         players[client.id].keys = keys;
         updateEntities();
       });
-  
+
       client.on('keyUp', (keys: any) => {
         players[client.id].keys = keys;
         updateEntities();
       });
-   
     });
-
   });
 
-
-
-  
   app.get('/', (req, res) => {
     console.log('in here');
     res.send('connected');
   });
-
 
   app.post('/register', async (req, res) => {
     console.log(req.body);
@@ -159,7 +158,7 @@ function initWorld() {
     const password = req.body.password;
     const color = req.body.color;
 
-    try { 
+    try {
       if (username && password) {
         const player = await db.authenticate(username, password, color);
         res.send({ status: 'SUCCESS', player });
@@ -171,4 +170,3 @@ function initWorld() {
     }
   });
 }
-
