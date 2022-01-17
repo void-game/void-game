@@ -1,6 +1,6 @@
 import { TileName } from './Tiles.types';
 
-const tileMap = {
+export const tileMap = {
   [TileName.DIRT]: {
     color: '#A0522D',
   },
@@ -9,4 +9,3 @@ const tileMap = {
   },
 };
 
-export { tileMap };

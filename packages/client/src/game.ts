@@ -47,8 +47,8 @@ class Game {
       this.state.entities = entities;
     });
 
-    this.server.socket.on('screen', (screen: string) => {
-      const screenState: ScreenState = JSON.parse(screen);
+    this.server.socket.on('screen', (screen: ScreenState) => {
+      const screenState: ScreenState = screen;
       this.screen.screenState = screenState;
     }); 
 

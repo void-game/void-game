@@ -49,7 +49,7 @@ export class Screen {
     client.join(this._key);
     this._entities.push(newPlayer.entity);
 
-    client.emit("screen", JSON.stringify(this._screenState));
+    client.emit("screen", this._screenState);
 
     client.on('keys', (keys: any) => {
       newPlayer.keys = keys;

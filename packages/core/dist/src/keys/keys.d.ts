@@ -1,0 +1,19 @@
+declare const enum Keys {
+    RIGHT = "right",
+    LEFT = "left",
+    DOWN = "down",
+    UP = "up",
+    SPRINT = "sprint"
+}
+declare const keyMap: {
+    68: Keys;
+    65: Keys;
+    83: Keys;
+    87: Keys;
+    38: Keys;
+    37: Keys;
+    39: Keys;
+    40: Keys;
+    16: Keys;
+};
+export { Keys, keyMap };
