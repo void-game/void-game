@@ -6,10 +6,6 @@ interface AuthData {
   password: string;
 }
 
-// const auth = window.localStorage.getItem('auth');
-
-// console.log('auth', auth);
-
 const settings: GameSettings = {
   showFPS: true,
   targetFPS: 60,

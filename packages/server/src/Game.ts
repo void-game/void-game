@@ -85,7 +85,6 @@ export class Game {
 
       client.on('join', (id) => {
         const savedPlayer = this.db.getPlayerById(id);
-        console.log(savedPlayer);
 
         const playerEntity = new Player(
           {
@@ -124,8 +123,7 @@ export class Game {
             const oldScreen: Screen | undefined = this.map.getScreenByKey(player.state.screenKey);
             if (oldScreen) {
               const newScreenKey = getNextScreenKey(oldScreen.position, direction) || '';
-              const newScreen: Screen | undefined = this.map.getScreenByKey(screenKey);
-              console.log('NEW SCREEN', newScreenKey);
+              const newScreen: Screen | undefined = this.map.getScreenByKey(newScreenKey);
               if (oldScreen && newScreen) {
                 oldScreen.removePlayer(client.id);
                 newScreen.addPlayer(playerEntity, client);

@@ -77,12 +77,14 @@ export class Player implements Entity {
   private handleCollisions(screenState: ScreenState, speed: number, direction: Keys) {
     const nearestTiles = this.findNearestTiles();
 
+    let leftScreen = false;
+
     Object.entries(nearestTiles).forEach(([key, value]) => {
+      if (leftScreen) return;
       // handle environment collisions
       const [tileKey, tileX, tileY] = value;
       const cell = screenState[tileKey];
       if (cell && cell.tile.collide) {
-        console.log('not out of bounds');
         switch (direction) {
           case Keys.LEFT:
             this.state.position.x += speed;
@@ -110,6 +112,8 @@ export class Player implements Entity {
                 screenKey: this.state.screenKey,
                 direction,
               });
+
+              leftScreen = true;
             }
             break;
           case 'bottomRight':
@@ -122,6 +126,8 @@ export class Player implements Entity {
                 screenKey: this.state.screenKey,
                 direction,
               });
+
+              leftScreen = true;
             }
             break;
         }
@@ -137,6 +143,8 @@ export class Player implements Entity {
                 screenKey: this.state.screenKey,
                 direction,
               });
+
+              leftScreen = true;
             }
             break;
           case 'topRight':
@@ -149,6 +157,8 @@ export class Player implements Entity {
                 screenKey: this.state.screenKey,
                 direction,
               });
+
+              leftScreen = true;
             }
             break;
         }

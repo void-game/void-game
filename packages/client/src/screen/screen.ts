@@ -48,7 +48,6 @@ class Screen {
 
     entities.forEach((e) => {
       // e.update();
-      console.log(e);
       this.renderEntity(e);
     });
   };

@@ -37,7 +37,7 @@ export class Database {
     if (player) {
       const match = await bcrypt.compare(password, player.passwordDigest);
       if (match) {
-        const updatedPlayerState: SavedPlayer = {...player, color};
+        const updatedPlayerState: SavedPlayer = { ...player, color };
         this.save(updatedPlayerState);
         return updatedPlayerState;
       }
@@ -63,7 +63,6 @@ export class Database {
   }
 
   getPlayerById(id: string) {
-    console.log(id, this._players);
     return this._players[id];
   }
 
