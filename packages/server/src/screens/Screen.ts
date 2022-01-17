@@ -35,7 +35,7 @@ export class Screen {
       Object.keys(this._players).forEach((k) => {
         if (this._players[k]) {
           const p = this._players[k];
-          p.entity.update(p.keys);
+          p.entity.update(p.keys, this._screenState);
           this.broadcastEntities();
         }
       });
@@ -49,7 +49,7 @@ export class Screen {
     client.join(this._key);
     this._entities.push(newPlayer.entity);
 
-    client.emit("screen", this._screenState);
+    client.emit('screen', this._screenState);
 
     client.on('keys', (keys: any) => {
       newPlayer.keys = keys;

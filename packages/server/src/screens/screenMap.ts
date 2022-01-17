@@ -1,12 +1,11 @@
-import { ScreenState, otherScreen } from '@core';
+import { ScreenState, otherScreen, iraq } from '@core';
 
 interface ScreenMap {
   [key: string]: ScreenState;
 }
 
 const screenMap: ScreenMap = {
-  '0,0,0': otherScreen,
-}
+  '0,0,0': iraq,
+};
 
-
-export { screenMap }
+export { screenMap };

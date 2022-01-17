@@ -1,4 +1,4 @@
-import { Tile } from "../tiles";
+import { Tile, TileMap } from '../tiles';
 export interface CellState {
     tile: Tile;
     position: {
@@ -11,4 +11,5 @@ export declare type ScreenState = {
 };
 export interface ScreenConfigs {
     tile?: Tile;
+    tiles?: TileMap;
 }

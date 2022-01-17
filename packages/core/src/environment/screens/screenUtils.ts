@@ -1,5 +1,5 @@
-import { tileMap, TileName } from "../tiles";
-import { ScreenConfigs, ScreenState } from "./Screen.types";
+import { tileMap, TileName } from '../tiles';
+import { ScreenConfigs, ScreenState } from './Screen.types';
 
 /*
 
@@ -53,7 +53,6 @@ const letters = [
   'z',
 ];
 
-
 const defaultConfigs = {
   tile: tileMap[TileName.DIRT],
 };
@@ -64,12 +63,16 @@ const createScreen = (configs: ScreenConfigs = defaultConfigs): ScreenState => {
   const screen = {};
   for (let i = 0; i < 16; i++) {
     for (let j = 0; j < 24; j++) {
-      screen[`${letters[i]}${j}`] = {tile, position: { x: j, y: i }};
+      if (configs.tiles && configs.tiles[`${letters[i]}${j}`]) {
+        const configTile = configs.tiles[`${letters[i]}${j}`];
+        screen[`${letters[i]}${j}`] = { tile: configTile, position: { x: j, y: i } };
+      } else {
+        screen[`${letters[i]}${j}`] = { tile, position: { x: j, y: i } };
+      }
     }
   }
 
   return screen;
 };
 
-
-export { createScreen }
+export { createScreen, letters };

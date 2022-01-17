@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createScreen = void 0;
+exports.letters = exports.createScreen = void 0;
 const tiles_1 = require("../tiles");
 const letters = [
     'a',
@@ -30,6 +30,7 @@ const letters = [
     'y',
     'z',
 ];
+exports.letters = letters;
 const defaultConfigs = {
     tile: tiles_1.tileMap[tiles_1.TileName.DIRT],
 };
@@ -38,7 +39,13 @@ const createScreen = (configs = defaultConfigs) => {
     const screen = {};
     for (let i = 0; i < 16; i++) {
         for (let j = 0; j < 24; j++) {
-            screen[`${letters[i]}${j}`] = { tile, position: { x: j, y: i } };
+            if (configs.tiles && configs.tiles[`${letters[i]}${j}`]) {
+                const configTile = configs.tiles[`${letters[i]}${j}`];
+                screen[`${letters[i]}${j}`] = { tile: configTile, position: { x: j, y: i } };
+            }
+            else {
+                screen[`${letters[i]}${j}`] = { tile, position: { x: j, y: i } };
+            }
         }
     }
     return screen;

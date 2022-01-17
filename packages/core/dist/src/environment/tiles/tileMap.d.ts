@@ -1,8 +1,2 @@
-export declare const tileMap: {
-    0: {
-        color: string;
-    };
-    1: {
-        color: string;
-    };
-};
+import { TileMap } from './Tiles.types';
+export declare const tileMap: TileMap;

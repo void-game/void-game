@@ -1,3 +1,5 @@
+import { CollisionMap } from '../collision';
+
 export interface EntityState {
   name: string;
   color: string;
@@ -11,6 +13,8 @@ export interface EntityState {
   };
   speed: number;
   screenKey: string;
+  collide: boolean;
+  collisionMap: CollisionMap;
 }
 
 export interface Entity {

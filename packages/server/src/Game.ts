@@ -1,8 +1,9 @@
 import { Express } from 'express';
 import { Server, Socket } from 'socket.io';
-import { Screen, screenMap } from './screens';
+import { Screen } from './screens';
 import { Database, SavedPlayer } from './db';
 import { Player } from './entities';
+import { CollisionLayer } from '@core';
 
 interface SavedClient {
   player?: SavedPlayer;
@@ -67,6 +68,13 @@ export class Game {
           position: savedPlayer.position,
           speed: 1.5,
           screenKey: savedPlayer.screenKey,
+          collide: true,
+          collisionMap: {
+            [CollisionLayer.PLAYERS]: true,
+            [CollisionLayer.ENEMIES]: true,
+            [CollisionLayer.ITEMS]: true,
+            [CollisionLayer.ENVIRONMENT]: true,
+          },
         });
 
         this.clients[client.id].player = savedPlayer;
