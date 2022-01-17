@@ -47,10 +47,15 @@ class Game {
       this.state.entities = entities;
     });
 
-    this.server.socket.on('screen', (screen: ScreenState) => {
-      const screenState: ScreenState = screen;
-      this.screen.screenState = screenState;
-    }); 
+    this.server.socket.on(
+      'screen',
+      ({ screen, entities }: { screen: ScreenState; entities: Entity[] }) => {
+        console.log('NEW SCREEN', screen);
+        const screenState: ScreenState = screen;
+        this.screen.screenState = screenState;
+        this.state.entities = entities;
+      }
+    );
 
     registerKeyEvents(this.server);
 

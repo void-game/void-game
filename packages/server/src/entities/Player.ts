@@ -1,4 +1,5 @@
 import { EntityState, Entity, Keys, CollisionLayer, ScreenState, letters } from '@core';
+import { EventEmitter } from 'events';
 
 const SPRINT_SPEED = 4;
 
@@ -8,22 +9,28 @@ const SCREEN_WIDTH = 1296;
 
 export class Player implements Entity {
   public state: EntityState;
+  private ScreenListener: EventEmitter;
+  private clientId: string;
 
-  constructor({
-    name = 'Joe',
-    color = 'blue',
-    speed = 100,
-    position: { x = 0, y = 0 },
-    size: { height = 20, width = 20 },
-    screenKey,
-    collide = true,
-    collisionMap = {
-      [CollisionLayer.PLAYERS]: true,
-      [CollisionLayer.ENEMIES]: true,
-      [CollisionLayer.ITEMS]: true,
-      [CollisionLayer.ENVIRONMENT]: true,
-    },
-  }: EntityState) {
+  constructor(
+    {
+      name = 'Joe',
+      color = 'blue',
+      speed = 100,
+      position: { x = 0, y = 0 },
+      size: { height = 20, width = 20 },
+      screenKey,
+      collide = true,
+      collisionMap = {
+        [CollisionLayer.PLAYERS]: true,
+        [CollisionLayer.ENEMIES]: true,
+        [CollisionLayer.ITEMS]: true,
+        [CollisionLayer.ENVIRONMENT]: true,
+      },
+    }: EntityState,
+    ScreenListener: EventEmitter,
+    clientId: string
+  ) {
     this.state = {
       name,
       color,
@@ -34,6 +41,9 @@ export class Player implements Entity {
       collide,
       collisionMap,
     };
+
+    this.ScreenListener = ScreenListener;
+    this.clientId = clientId;
   }
 
   private findTileByPosition(x: number, y: number) {
@@ -43,7 +53,7 @@ export class Player implements Entity {
     const tileLetter = letters[tileY];
 
     const tileKey = `${tileLetter}${tileX}`;
-    return tileKey;
+    return [tileKey, tileX, tileY];
   }
 
   public findNearestTiles() {
@@ -68,8 +78,11 @@ export class Player implements Entity {
     const nearestTiles = this.findNearestTiles();
 
     Object.entries(nearestTiles).forEach(([key, value]) => {
-      const cell = screenState[value];
+      // handle environment collisions
+      const [tileKey, tileX, tileY] = value;
+      const cell = screenState[tileKey];
       if (cell && cell.tile.collide) {
+        console.log('not out of bounds');
         switch (direction) {
           case Keys.LEFT:
             this.state.position.x += speed;
@@ -82,6 +95,61 @@ export class Player implements Entity {
             break;
           case Keys.UP:
             this.state.position.y += speed;
+            break;
+        }
+      } else if ((!cell && direction === Keys.LEFT) || direction === Keys.UP) {
+        // if no cell, out of bounds
+        switch (key) {
+          case 'bottomLeft':
+            const { bottomRight } = nearestTiles;
+            const [_, x, y] = bottomRight;
+
+            if ((x < 0 || y < 0) && (tileX < 0 || tileY < 0)) {
+              this.ScreenListener.emit(`change-${this.clientId}`, {
+                player: this,
+                screenKey: this.state.screenKey,
+                direction,
+              });
+            }
+            break;
+          case 'bottomRight':
+            const { bottomLeft } = nearestTiles;
+            const [__, xx, yy] = bottomLeft;
+
+            if ((xx < 0 || yy < 0) && (tileX < 0 || tileY < 0)) {
+              this.ScreenListener.emit(`change-${this.clientId}`, {
+                player: this,
+                screenKey: this.state.screenKey,
+                direction,
+              });
+            }
+            break;
+        }
+      } else if ((!cell && direction === Keys.DOWN) || direction === Keys.RIGHT) {
+        switch (key) {
+          case 'topLeft':
+            const { bottomRight } = nearestTiles;
+            const [_, x, y] = bottomRight;
+
+            if ((y > 15 || x > 23) && (tileY > 15 || tileX > 23)) {
+              this.ScreenListener.emit(`change-${this.clientId}`, {
+                player: this,
+                screenKey: this.state.screenKey,
+                direction,
+              });
+            }
+            break;
+          case 'topRight':
+            const { bottomLeft } = nearestTiles;
+            const [__, xx, yy] = bottomLeft;
+
+            if ((yy > 15 || xx > 23) && (tileY > 15 || tileX > 23)) {
+              this.ScreenListener.emit(`change-${this.clientId}`, {
+                player: this,
+                screenKey: this.state.screenKey,
+                direction,
+              });
+            }
             break;
         }
       }
