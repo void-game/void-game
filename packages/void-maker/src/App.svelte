@@ -1,37 +1,36 @@
 <script lang="ts">
-	import HsvPicker from './components/ColorPicker.svelte';
 	import Button from './components/Button.svelte';
+	import Dropdown from './components/Dropdown.svelte';
+	import Clipboard from 'svelte-clipboard';
 
-	let debug = false;
+	// default tile == dirt
+	let defaultTile = {
+		name: "Dirt",
+		tile: {
+			color: '#A0522D',
+      collide: false,
+		}
+  }
 
-	function debugFunc() {
-			console.log('xx Color ', selectedColor); // eslint-disable-line
-			console.log(`xx Index ${currentIndex.x}, ${currentIndex.y}`); // eslint-disable-line
-			console.log('xx Grid ', colorGrid); // eslint-disable-line
+	let currentTile = defaultTile;
+
+	const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+
+	interface Tile {
+		color: string,
+		collide: boolean,
 	}
 
-	interface Color {
-		r: number,
-		g: number, 
-		b: number,
-		a: number,
-	}
-
-	interface GridCell {
-		color: Color,
-		borderColor: Color,
-	}
-	
-	interface ColorGrid {
-		grid: GridCell[][],
+	interface TileGrid {
+		grid: Tile[][],
 		height: number,
 		width: number,
 	}
 
-	let colorGrid: ColorGrid = {
+	let tileGrid: TileGrid = {
 		grid: Array.from({length: 22}, e => Array(32)),
-		height: 10,
-		width: 10,
+		height: 16,
+		width: 24,
 	}
 
 	interface GridIndex {
@@ -41,57 +40,42 @@
 	
 	let currentIndex: GridIndex = {x: 0, y: 0};
 
-	// Currently Selected Color
-	let selectedColor: Color = {r: 255, g: 255, b: 255, a: 1};
-
 	// Currently Saved Grid
 	let currentSavedGrid = null;
 
 	function initializeGrid() {
-		for (let i = 0; i < colorGrid.height; i++) {
-			for (let j = 0; j < colorGrid.width; j++) {
-				colorGrid.grid[i][j] = {
-					color: selectedColor,
-					borderColor: {r: 0, g: 0, b: 0, a: 0},
-				};
+		for (let i = 0; i < tileGrid.height; i++) {
+			for (let j = 0; j < tileGrid.width; j++) {
+				tileGrid.grid[i][j] = defaultTile.tile;
 			}
 		}
 	}
 	initializeGrid();
 	
 	function clearGrid() {
-		for (let i = 0; i < colorGrid.height; i++) {
-			for (let j = 0; j < colorGrid.width; j++) {
-				colorGrid.grid[i][j] = {...colorGrid.grid[i][j], color: {r: 255, g: 255, b: 255, a: 1}};
+		for (let i = 0; i < tileGrid.height; i++) {
+			for (let j = 0; j < tileGrid.width; j++) {
+				tileGrid.grid[i][j] = defaultTile.tile;
 			}
 		}
 	}
 	
 	function saveGrid() {
-		const currGrid = JSON.stringify(colorGrid);
+		const currGrid = JSON.stringify(tileGrid.grid);
 		currentSavedGrid = currGrid;
 	}
 	
 	function loadGrid() {
 		if (currentSavedGrid) {
 			const savedGrid = JSON.parse(currentSavedGrid);
-			colorGrid = savedGrid;
+			tileGrid.grid = savedGrid;
 		}
 	}
 
-	function colorCallback(rgba: any) {
-		selectedColor = rgba.detail;
-	}
 	
 	function onCellSelected(x: number, y: number) {
-		// DEBUG
-		debug && debugFunc();
-
 		currentIndex = {x,y};
-		colorGrid.grid[x][y] = {
-			...colorGrid.grid[x][y],
-			color: selectedColor,
-		}
+		tileGrid.grid[x][y] = currentTile.tile;
 	}
 
 	interface HState {
@@ -119,11 +103,6 @@
 		}
 	}
 
-	function onMouseEnter(x: number, y: number) {
-		if (highlightState.down) {
-
-		}
-	}
 
 	function highlightSection(hState: HState) {
 		if (hState.indOne && hState.indTwo) {
@@ -136,30 +115,108 @@
 
 			for (let i = xMin; i <= xMax; i++) {
 				for (let j = yMin; j <= yMax; j++) {
-					colorGrid.grid[i][j] = {
-						color: selectedColor,
-						borderColor: {r: 0, g: 0, b: 0, a: 1},
-					}
+					tileGrid.grid[i][j] = currentTile.tile;
 				}
 			}
 		}
 	}
 
+	function onTileChange(newTile){
+		currentTile = newTile.detail;
+	}
+
+	let generatedMap = '';
+
+	function generateTileMap() {
+		const finalMap = {};
+		for (let i = 0; i < tileGrid.height; i++) {
+			for (let j = 0; j < tileGrid.width; j++) {
+				finalMap[`${letters[i]}${j}`] = {tile: tileGrid.grid[i][j], position: { x: j, y: i } };
+			}
+		}
+  	generatedMap = JSON.stringify(finalMap);
+	}
 
 </script>
 	
 <style>
 	:root {
-		background-color: rgb(88, 88, 136);
+		background-color: #585888;
+	}
+
+	main {
+		display: flex;
+		justify-content: center;
 	}
 
 	.container {
-		display: flex;
-		height: 100vh;
 		width: 100%;
-		justify-content: center;
+		display: flex;
+		justify-content: space-around;
 		position: relative;
+		padding: 5em 10em;
 		top: 10vh;
+	}
+
+	.controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		background-color: #ACACDE;
+		padding: 2em;
+		border-radius: 10px;
+		box-shadow: 0px 0px 10px 1px black;
+		width: 20%;
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-areas:
+      ". numberrow"
+      "lettercol grid";
+    gap: 10px;
+		margin: 10px;
+	}
+
+	.grid {
+		grid-area: grid;
+	}
+
+	.letter-col {
+		display: flex;
+		flex-direction: column;
+		grid-area: lettercol;
+	}
+
+	.letter-col-letter {	
+		color: white;
+		font-weight: bold;	
+		font-family: monospace;
+		font-size: 18px;
+		height: 30px;
+		width: 30px;
+		margin: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.number-row {
+		display: flex;
+		grid-area: numberrow;
+	}
+
+	.number-row-number {
+		color: white;
+		font-weight: bold;	
+		font-family: monospace;
+		font-size: 18px;
+		height: 30px;
+		width: 30px;
+		margin: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.row {
@@ -167,11 +224,12 @@
 	}
 	
 	.block {
-		height: 20px;
-		width: 20px;
+		height: 30px;
+		width: 30px;
 		margin: 2px;
 		border-radius: 5px;
 		border: 2px solid black;
+		box-sizing: border-box;
 	}
 
 	.block:hover {
@@ -180,38 +238,66 @@
 		cursor: pointer;
 	}
 
+	.file-buttons {
+		display: flex;
+		width: 100%;
+		margin: 1em 0 2em 0;
+	}
+
 </style>
+<main>
+	<div class="container">
+		
+		<div class="controls">
+			<Dropdown on:tileChanged={onTileChange}/>
+			<Button style="width: 100%; margin: 2em 0 0 0;" text="Clear" on:onSelected={clearGrid} />
+			<div class="file-buttons">
+				<Button style="width: 100%; margin: 0 5px 0 0" text="Generate Map" on:onSelected={generateTileMap} />
+				<Button style="width: 100%; margin: 0 0px 0 5px" text="Load Map" on:onSelected={loadGrid} />	
+			</div>
+			<textarea style="justify-self: end; border-radius: 10px; resize: none" name="" id="" cols="32" rows="14">{generatedMap}</textarea>
+			<Clipboard
+				text={generatedMap}
+				let:copy
+				on:copy={() => {
+					console.log('Has Copied');
+				}}>
+				<Button style="width: 100%; margin: 2em 0 0 0;" text="Copy to Clipboard" on:onSelected={copy} />
+			</Clipboard>
+		</div>
 
-<div class="container">
-	
-	<div style="display: flex; flex-direction: column">
-		<Button text="Clear" on:onSelected={clearGrid} />
-		<Button text="Save" on:onSelected={saveGrid} />
-		<Button text="Load" on:onSelected={loadGrid} />
-	</div>
+		<!-- <HsvPicker on:colorChange={colorCallback} startColor={"#FBFBFB"}/> -->
 
-	<HsvPicker on:colorChange={colorCallback} startColor={"#FBFBFB"}/>
-
-	<div style="margin: 0px 20px">
-		{#each {length: colorGrid.height} as _, i}
-			<div class="row">
-				{#each {length: colorGrid.width} as _, j}
-					<div 
-						on:mousedown|preventDefault={() => onMouseDown(i,j)} 
-						on:mouseup={() => onMouseUp(i,j)} 
-						on:click|self={() => onCellSelected(i,j)}
-						on:mouseenter={() => {}}
-						class="block"
-						style="background-color: rgba(
-							{colorGrid.grid[i][j].color.r},
-							{colorGrid.grid[i][j].color.g},
-							{colorGrid.grid[i][j].color.b},
-							{colorGrid.grid[i][j].color.a})"
-							>
+		<div class="grid-container">
+			<div class="number-row"> 
+				{#each {length: tileGrid.width} as _, i}
+					<div class="number-row-number">{i}</div>
+				{/each}
+			</div>
+			<div class="letter-col"> 
+				{#each {length: tileGrid.height} as _, i}
+					<div class="letter-col-letter">{letters[i]}</div>
+				{/each}
+			</div>
+			<div class="grid">
+				{#each {length: tileGrid.height} as _, i}
+					<div class="row">
+						{#each {length: tileGrid.width} as _, j}
+							<div 
+								on:mousedown|preventDefault={() => onMouseDown(i,j)} 
+								on:mouseup={() => onMouseUp(i,j)} 
+								on:click|self={() => onCellSelected(i,j)}
+								on:mouseenter={() => {}}
+								class="block"
+								style="background-color: {tileGrid.grid[i][j].color}">
+							</div>
+						{/each}
 					</div>
 				{/each}
 			</div>
-		{/each}
-	</div>
 
-</div>
+		</div>
+	</div>
+</main>
+
+
