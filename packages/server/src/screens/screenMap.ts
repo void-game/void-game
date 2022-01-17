@@ -6,6 +6,7 @@ import {
   ireland,
   afghanistan,
   mapMakerScreen,
+  zelda,
 } from '@core';
 
 interface ScreenMap {
@@ -13,7 +14,7 @@ interface ScreenMap {
 }
 
 const screenMap: ScreenMap = {
-  '0,0,0': mapMakerScreen,
+  '0,0,0': zelda,
   '1,0,0': defaultScreen,
   '-1,0,0': afghanistan,
   '0,-1,0': iraq,

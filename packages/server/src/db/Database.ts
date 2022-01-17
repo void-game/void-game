@@ -15,8 +15,8 @@ export interface SavedPlayer {
 }
 
 const defaultPosition: Position = {
-  x: 0,
-  y: 0,
+  x: 1296 / 2,
+  y: 864 / 2,
 };
 
 export function makeid(length: number) {
