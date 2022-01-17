@@ -126,6 +126,12 @@ importers:
       ts-node: 10.4.0_faf01e1d5a40372a98081522dcafc186
       typescript: 4.5.4
 
+  packages/void-maker:
+    specifiers:
+      svelte-clipboard: ^1.0.0
+    devDependencies:
+      svelte-clipboard: 1.0.0
+
 packages:
 
   /@babel/code-frame/7.16.7:
@@ -4480,7 +4486,7 @@ packages:
     dev: false
 
   /encoding/0.1.13:
-    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    resolution: {integrity: sha1-VldK/deR9UqOmyeFwFgqLSYhD6k=}
     requiresBuild: true
     dependencies:
       iconv-lite: 0.6.3
@@ -5481,7 +5487,7 @@ packages:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
 
   /fsevents/2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    resolution: {integrity: sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro=}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -9354,6 +9360,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /svelte-clipboard/1.0.0:
+    resolution: {integrity: sha1-KDE146KIlhyYw9SF6J3qBg7/NcA=}
+    dev: true
+
   /symbol-tree/3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
@@ -9708,7 +9718,7 @@ packages:
     dev: true
 
   /uglify-js/3.14.5:
-    resolution: {integrity: sha512-qZukoSxOG0urUTvjc2ERMTcAy+BiFh3weWAkeurLwjrCba73poHmG3E36XEjd/JGukMzwTL7uCxZiAexj8ppvQ==}
+    resolution: {integrity: sha1-zau31JVCMdgMtKknZUxGVeUfSFk=}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
