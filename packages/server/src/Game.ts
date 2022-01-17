@@ -1,6 +1,6 @@
 import { Express } from 'express';
 import { Server, Socket } from 'socket.io';
-import { Screen } from './screens';
+import { Screen, screenMap } from './screens';
 import { Database, SavedPlayer } from './db';
 import { Player } from './entities';
 

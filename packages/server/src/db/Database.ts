@@ -32,12 +32,14 @@ export function makeid(length: number) {
 export class Database {
   private _players: { [key: string]: SavedPlayer } = {};
 
-  async authenticate(username: string, password: string, color?: string) {
+  async authenticate(username: string, password: string, color: string) {
     const player = this.findPlayerByUsername(username);
     if (player) {
       const match = await bcrypt.compare(password, player.passwordDigest);
       if (match) {
-        return player;
+        const updatedPlayerState: SavedPlayer = {...player, color};
+        this.save(updatedPlayerState);
+        return updatedPlayerState;
       }
 
       throw new Error('UNAUTHORIZED');

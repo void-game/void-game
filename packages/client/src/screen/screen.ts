@@ -1,5 +1,4 @@
-import { Entity } from '@core';
-import screenState, { CellState } from './sampleScreen';
+import { Entity, defaultScreen, ScreenState, CellState } from '@core';
 
 class Screen {
   private root;
@@ -8,6 +7,7 @@ class Screen {
   private ratio;
   private height = 864;
   private width = 1296;
+  private _screenState;
 
   // render canvas
   constructor() {
@@ -21,6 +21,7 @@ class Screen {
     this.ratio = 1; // this.getPixelRatio(this.context);
     this.canvas.style.border = '5px solid var(--gameboy-grey)';
     this.canvas.style.boxSizing = 'border-box';
+    this._screenState = defaultScreen;
 
     this.root?.append(this.canvas);
 
@@ -28,13 +29,21 @@ class Screen {
     window.addEventListener('resize', this.resize);
   }
 
+  get screenState() {
+    return this._screenState;
+  }
+
+  set screenState(screenState: ScreenState) {
+    this._screenState = screenState;
+  }
+
   draw = (entities: Entity[], FPS: number) => {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.drawFPS(FPS);
 
-    Object.keys(screenState).forEach((c) => {
-      this.renderCell(screenState[c]);
+    Object.keys(this._screenState).forEach((c) => {
+      this.renderCell(this._screenState[c]);
     });
 
     entities.forEach((e) => {

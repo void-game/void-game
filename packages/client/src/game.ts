@@ -2,6 +2,7 @@ import { Entity } from '@core';
 import Screen from './screen/screen';
 import { registerKeyEvents } from './keys/onKeyDown';
 import Server from './server/Server';
+import { ScreenState } from '@core';
 
 export interface GameSettings {
   showFPS: boolean;
@@ -26,7 +27,6 @@ class Game {
 
   constructor({ showFPS = false, targetFPS = 60 }: GameSettings, id: string) {
     this.server = new Server(id);
-
     this.screen = new Screen();
 
     this.settings = {
@@ -46,6 +46,11 @@ class Game {
     this.server.socket.on('entities', (entities: Entity[]) => {
       this.state.entities = entities;
     });
+
+    this.server.socket.on('screen', (screen: string) => {
+      const screenState: ScreenState = JSON.parse(screen);
+      this.screen.screenState = screenState;
+    }); 
 
     registerKeyEvents(this.server);
 

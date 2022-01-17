@@ -1,4 +1,5 @@
-import { TileName } from '@core';
+import { ScreenState, ScreenConfigs } from './Screen.types';
+import { TileName, tileMap } from '../tiles';
 
 // Zelda 11 x 16
 // Ours  16 x 24
@@ -55,38 +56,13 @@ const letters = [
   'z',
 ];
 
-interface Tile {
-  color: string;
-}
 
-const tileMap = {
-  [TileName.DIRT]: {
-    color: '#A0522D',
-  },
-  [TileName.GRASS]: {
-    color: '#006400',
-  },
-};
-
-export interface CellState {
-  tile: Tile;
-  position: {
-    x: number;
-    y: number;
-  };
-}
 
 const defaultConfigs = {
   tile: tileMap[TileName.DIRT],
 };
 
-interface ScreenConfigs {
-  tile?: Tile;
-}
 
-type ScreenState = {
-  [key: string]: CellState;
-};
 
 // Returns screen (22 x 32) with given configs
 const createScreen = (configs: ScreenConfigs = defaultConfigs): ScreenState => {
@@ -94,20 +70,15 @@ const createScreen = (configs: ScreenConfigs = defaultConfigs): ScreenState => {
   const screen = {};
   for (let i = 0; i < 16; i++) {
     for (let j = 0; j < 24; j++) {
-      if ((i % 2 === 0 && j % 2 !== 0) || (i % 2 !== 0 && j % 2 === 0)) {
-        screen[`${letters[i]}${j}`] = { tile, position: { x: j, y: i } };
-      } else {
-        screen[`${letters[i]}${j}`] = {
-          tile: tileMap[TileName.GRASS],
-          position: { x: j, y: i },
-        };
-      }
+      screen[`${letters[i]}${j}`] = {tile, position: { x: j, y: i }};
     }
   }
 
   return screen;
 };
 
-const screenState = createScreen({});
+const defaultScreen = createScreen({tile: tileMap[TileName.DIRT]});
+const otherScreen = createScreen({tile: tileMap[TileName.GRASS]});
 
-export default screenState;
+
+export { defaultScreen, otherScreen };
