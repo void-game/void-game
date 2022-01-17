@@ -127,7 +127,24 @@ export class Game {
               if (oldScreen && newScreen) {
                 oldScreen.removePlayer(client.id);
                 newScreen.addPlayer(playerEntity, client);
-                playerEntity.state.position = { x: 0, y: 0 };
+                let position = { x: 0, y: 0 };
+                // set new position
+                switch (direction) {
+                  case Keys.LEFT:
+                    position = { y: player.state.position.y, x: 1296 - 54 };
+                    break;
+                  case Keys.RIGHT:
+                    position = { y: player.state.position.y, x: 0 };
+                    break;
+                  case Keys.UP:
+                    position = { y: 864 - 54, x: player.state.position.x };
+                    break;
+                  case Keys.DOWN:
+                    position = { y: 0, x: player.state.position.x };
+                    break;
+                }
+
+                playerEntity.state.position = position;
                 playerEntity.state.screenKey = newScreenKey;
               }
             }
