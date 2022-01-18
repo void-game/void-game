@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "npx concurrently 'pnpm dev --prefix ./packages/server' 'pnpm dev --prefix ./packages/client' 'pnpm dev --prefix ./packages/void-maker'",
+    "gen": "pnpm dev --prefix ./packages/void-gen",
     "build": ""
   },
   "husky": {

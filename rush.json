@@ -403,6 +403,10 @@
     {
       "packageName": "void-maker",
       "projectFolder": "packages/void-maker"
+    },
+    {
+      "packageName": "void-gen",
+      "projectFolder": "packages/void-gen"
     }
     // {
     //   /**
