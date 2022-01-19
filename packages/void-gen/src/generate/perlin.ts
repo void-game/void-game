@@ -8,25 +8,29 @@ const MULTIPLIER = 25;
 const COLUMNS = 16 * MULTIPLIER;
 const ROWS = 24 * MULTIPLIER;
 
+const REDISTRIBUTION = 1;
+
 //16x24 screens
+
+const addTree = () => {};
 
 // returns a color based on elevation and moisture
 const getBiome = (elevation: number, moisture: number): string => {
 	// OCEAN
-	if (elevation < -0.5) return '#368fe2';
+	if (elevation < -0.8) return '#368fe2';
 
 	// BEACH
-	if (elevation < -0.4) return '#ece3b1';
+	if (elevation < -0.7) return '#ece3b1';
 
 	if (elevation > 0.4) {
 		// SCORCHED
-		if (moisture > 0.1) return '#ef7546';
+		if (moisture < -0.8) return '#ef7546';
 
 		// BARE
-		if (moisture > 0.2) return '#d0baab';
+		if (moisture < 0) return '#d0baab';
 
 		// TUNDRA
-		if (moisture > 0) return '#bbb1b2';
+		if (moisture < 0.2) return '#bbb1b2';
 
 		// SNOW
 		return '#ffffff';
@@ -34,10 +38,10 @@ const getBiome = (elevation: number, moisture: number): string => {
 
 	if (elevation > 0.2) {
 		// Temperate Desert
-		if (moisture > 0.2) return '#a3654e';
+		if (moisture < -0.8) return '#a3654e';
 
 		// Shrubland
-		if (moisture > 0.66) return '#a6b391';
+		if (moisture < 0) return '#a6b391';
 
 		// Taiga
 		return '#4c6f46';
@@ -45,29 +49,33 @@ const getBiome = (elevation: number, moisture: number): string => {
 
 	if (elevation > 0) {
 		// Temperate Desert
-		if (moisture > 0.4) return '#a3654e';
+		if (moisture < -0.8) return '#a3654e';
 
 		// Grassland
-		if (moisture > 0.2) return '#c7ad67';
+		if (moisture < 0) return '#c7ad67';
 
 		// Temperate Deciduous Forest
-		if (moisture > 0) return '#b98727';
+		if (moisture < 0.2) return '#b98727';
 
 		// Temperate Rain Forest
 		return '#7b873f';
 	}
 
 	// Subtropical Desert
-	if (moisture < 0.16) return '#bd8d90';
+	if (moisture < -0.8) return '#bd8d90';
 
 	// Grassland
-	if (moisture < 0.33) return '#c7ad67';
+	if (moisture - 0) return '#c7ad67';
 
 	// Tropical Seasonal Forest
-	if (moisture < 0.66) return '#36492f';
+	if (moisture < 0.2) return '#36492f';
 
 	// Tropical Rain Forest
 	return '#7b873f';
+};
+
+const ridgenoise = (nx: number, ny: number, s: SimplexNoise) => {
+	return 2 * (0.5 - Math.abs(0.5 - s.noise2D(nx, ny)));
 };
 
 export const generatePerlinNoise = () => {
@@ -77,6 +85,8 @@ export const generatePerlinNoise = () => {
 	const root = document.getElementById('svelte');
 
 	const moistureSimplex = new SimplexNoise();
+
+	const treeSimplex = new SimplexNoise();
 
 	canvas.height = HEIGHT;
 	canvas.width = WIDTH;
@@ -92,9 +102,9 @@ export const generatePerlinNoise = () => {
 			const ny = y / 128 - 0.5;
 
 			const e =
-				1 * simplex.noise2D(1 * nx, 1 * ny) +
-				0.5 * simplex.noise2D(2 * nx, 2 * ny) +
-				0.25 * simplex.noise2D(4 * nx, 4 * ny);
+				1 * ridgenoise(1 * nx, 1 * ny, simplex) +
+				0.5 * ridgenoise(2 * nx, 2 * ny, simplex) +
+				0.25 * ridgenoise(4 * nx, 4 * ny, simplex);
 
 			const ee = e / (1 + 0.5 + 0.25);
 
@@ -107,8 +117,9 @@ export const generatePerlinNoise = () => {
 
 			// const value = simplex.noise2D(10 * nx, 10 * ny);
 			// const value = Math.pow(e, 5);
-			const value = Math.pow(ee, 1);
-			row.push({ elevation: value, moisture: mm });
+			const value = Math.round(ee * 32) / 32;
+			const moist = Math.round(mm * 32) / 32;
+			row.push({ elevation: value, moisture: moist });
 		}
 		grid.push(row);
 	}
