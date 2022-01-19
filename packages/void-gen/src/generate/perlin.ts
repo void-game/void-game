@@ -23,7 +23,17 @@ export const generatePerlinNoise = () => {
 		for (let x = 0; x < 192; x++) {
 			const nx = x / 192 - 0.5;
 			const ny = y / 128 - 0.5;
-			const value = simplex.noise2D(7 * nx, 7 * ny);
+
+			const e =
+				1 * simplex.noise2D(1 * nx, 1 * ny) +
+				0.5 * simplex.noise2D(2 * nx, 2 * ny) +
+				0.25 * simplex.noise2D(4 * nx, 4 * ny);
+
+			const ee = e / (1 + 0.5 + 0.25);
+
+			// const value = simplex.noise2D(10 * nx, 10 * ny);
+			// const value = Math.pow(e, 5);
+			const value = e;
 			row.push(value);
 		}
 		grid.push(row);
