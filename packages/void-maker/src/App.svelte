@@ -28,7 +28,7 @@
 	}
 
 	let tileGrid: TileGrid = {
-		grid: Array.from({length: 22}, e => Array(32)),
+		grid: Array.from({length: 16}, e => Array(24)),
 		height: 16,
 		width: 24,
 	}
