@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { generatePerlinNoise } from '../generate';
+    import { generateMap } from '../generate';
 </script>
 
-<button on:click={generatePerlinNoise}>Generate World</button>
+<button on:click={() => generateMap({ screenMultipler: 25, frequency: 10, redistribution: 1.9 })}>Generate World</button>
