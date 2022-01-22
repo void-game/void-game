@@ -1,6 +1,6 @@
 import { Express } from 'express';
 import { Server, Socket } from 'socket.io';
-import { Screen } from './screens';
+import { Screen, screenMap } from './screens';
 import { Database, SavedPlayer } from './db';
 import { Player } from './entities';
 import {
@@ -38,6 +38,19 @@ const getNextScreenKey = (screenPosition: { x: number; y: number; z: number }, d
   }
 };
 
+
+
+const buildNewScreens = (io: any) => {
+  const screens = {};
+  Object.entries(screenMap).forEach(([k, v]) => {
+    const coords = k.split(',');  
+    screens[k] = new Screen({ x: parseInt(coords[0], 10), y: parseInt(coords[1], 10), z: 0}, io);
+  });
+  return screens;
+}
+
+
+
 export class Game {
   private map;
   private server;
@@ -58,11 +71,7 @@ export class Game {
 
     const io = this.io;
     const defaultMap = {
-      '0,0,0': new Screen({ x: 0, y: 0, z: 0 }, io),
-      '1,0,0': new Screen({ x: 1, y: 0, z: 0 }, io),
-      '-1,0,0': new Screen({ x: -1, y: 0, z: 0 }, io),
-      '0,-1,0': new Screen({ x: 0, y: -1, z: 0 }, io),
-      '0,1,0': new Screen({ x: 0, y: 1, z: 0 }, io),
+      ...buildNewScreens(io),
       getScreenByCoordinates(x: number, y: number, z: number): Screen | undefined {
         return this[`${x},${y},${z}`];
       },

@@ -11,9 +11,33 @@ exports.tileMap = {
         color: '#006400',
         collide: false,
     },
+    [Tiles_types_1.TileName.STONE]: {
+        color: '#787876',
+        collide: false,
+    },
     [Tiles_types_1.TileName.STONE_WALL]: {
         color: '#778899',
         collide: true,
+    },
+    [Tiles_types_1.TileName.WATER]: {
+        color: '#3333f5',
+        collide: false
+    },
+    [Tiles_types_1.TileName.BEACH]: {
+        color: '#ffffda',
+        collide: false
+    },
+    [Tiles_types_1.TileName.FOREST]: {
+        color: '#60a473',
+        collide: false
+    },
+    [Tiles_types_1.TileName.PEAK]: {
+        color: '#a6a6a6',
+        collide: false
+    },
+    [Tiles_types_1.TileName.SNOW]: {
+        color: 'white',
+        collide: false
     },
 };
 //# sourceMappingURL=tileMap.js.map

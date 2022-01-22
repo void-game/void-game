@@ -1,7 +1,13 @@
 export enum TileName {
   DIRT,
   GRASS,
+	STONE,
   STONE_WALL,
+  WATER,
+	BEACH,
+	FOREST,
+	PEAK,
+	SNOW,
 }
 
 export interface Tile {

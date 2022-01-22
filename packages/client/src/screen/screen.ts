@@ -41,7 +41,7 @@ class Screen {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.drawFPS(FPS);
-
+    
     Object.keys(this._screenState).forEach((c) => {
       this.renderCell(this._screenState[c]);
     });

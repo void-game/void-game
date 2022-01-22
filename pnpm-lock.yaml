@@ -91,6 +91,12 @@ importers:
       typescript: 4.5.4
       vite: 2.7.12
 
+  packages/core:
+    specifiers:
+      simplex-noise: ^3.0.1
+    dependencies:
+      simplex-noise: 3.0.1
+
   packages/server:
     specifiers:
       '@types/bcrypt': ^5.0.0
@@ -8965,6 +8971,10 @@ packages:
 
   /signal-exit/3.0.6:
     resolution: {integrity: sha512-sDl4qMFpijcGw22U5w63KmD3cZJfBuFlVNbVMKje2keoKML7X2UzWbc4XrmEbDwg0NXJc3yv4/ox7b+JWb57kQ==}
+
+  /simplex-noise/3.0.1:
+    resolution: {integrity: sha1-rZTnu25TqXMTnomZNIy2EjszR7o=}
+    dev: false
 
   /sisteransi/1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}

@@ -50,6 +50,8 @@ export class Screen {
       client.join(this._key);
       this._entities.push(newPlayer.entity);
 
+      console.log(this._screenState);
+
       client.emit('screen', { screen: this._screenState, entities: this._entities });
 
       client.on('keys', (keys: any) => {

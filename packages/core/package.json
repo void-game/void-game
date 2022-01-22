@@ -8,5 +8,8 @@
     "build": "tsc"
   },
   "author": "zjcrumpton",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "simplex-noise": "^3.0.1"
+  }
 }

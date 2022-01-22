@@ -1,4 +1,6 @@
 import SimplexNoise from 'simplex-noise';
+import { Tile, TileName, tileMap } from '../environment/tiles';
+import { letters } from '../environment/screens';
 
 // const MULTIPLIER = 25;
 
@@ -193,81 +195,31 @@ enum Biome {
 	SNOW,
 }
 
-interface Tile {
-	tile: string,
-	color: string,
-}
-interface BiomeMap {
-	[Biome.WATER]: Tile,
-	[Biome.BEACH]: Tile,
-	[Biome.GRASS]: Tile,
-	[Biome.FOREST]: Tile,
-	[Biome.DIRT]: Tile,
-	[Biome.STONE]: Tile,
-	[Biome.PEAK]: Tile,
-	[Biome.SNOW]: Tile,
-}
-
-const biomeMap: BiomeMap = {
-	[Biome.WATER]: {
-		tile: 'water',
-		color: '#3333f5',
-	},
-	[Biome.BEACH]: {
-		tile: 'beach',
-		color: '#ffffda',
-	},
-	[Biome.GRASS]:	{
-		tile: 'grass',
-		color: '#5cc970',
-	},
-	[Biome.FOREST]: {
-		tile: 'forest',
-		color: '#60a473',
-	},
-	[Biome.DIRT]: {
-		tile: 'dirt',
-		color: '#6b503c',
-	},
-	[Biome.STONE]: {
-		tile: 'stone',
-		color: '#787876',
-	},
-	[Biome.PEAK]: {
-		tile: 'peak',
-		color: '#a6a6a6',
-	},
-	[Biome.SNOW]: {
-		tile: 'snow',
-		color: 'white',
-	},
-}
-
 
 const getBiome = (e: number, m: number) => {
 	// Water
-	if (e < 0.06) return biomeMap[Biome.WATER];
+	if (e < 0.06) return tileMap[TileName.WATER];
 
 	// Beach
-	if (e < 0.07) return biomeMap[Biome.BEACH];
+	if (e < 0.07) return tileMap[TileName.BEACH];
 
 	// Grass
-	if (e < 0.3) return biomeMap[Biome.GRASS];
+	if (e < 0.3) return tileMap[TileName.GRASS];
 
 	// Forest
-	if (e < 0.5) return biomeMap[Biome.FOREST];
+	if (e < 0.5) return tileMap[TileName.FOREST];
 
 	// Dirt
-	if (e < 0.6) return biomeMap[Biome.DIRT];
+	if (e < 0.6) return tileMap[TileName.DIRT];
 
 	// Stone
-	if (e < 0.7) return biomeMap[Biome.STONE];
+	if (e < 0.7) return tileMap[TileName.STONE];
 
 	// Peak
-	if (e < 0.8) return biomeMap[Biome.PEAK];
+	if (e < 0.8) return tileMap[TileName.PEAK];
 
 	// Snow
-	return biomeMap[Biome.SNOW];
+	return tileMap[TileName.SNOW];
 
 	// WATER
 	// if (e < 0.04) return '#4682B4';
@@ -337,19 +289,31 @@ const genSliceBoundaries = (multiplier, mapHeight, mapWidth) => {
 	return {screenSliceHeight, screenSliceWidth};
 }
 
-const sliceMap = (map, sliceHeight, sliceWidth) => {
-	const slicedChunks = [];
+// X, Y, Z
+// 0,0,0, 0,1,0, 
+// TODO fix desired height and width
+const sliceMap = (map: any, sliceHeight: any, sliceWidth: any) => {
+	const slicedChunks = {};
 
 	for (let y = 0; y < map.length; y += sliceHeight) {
 		for (let x = 0; x < map[0].length; x += sliceWidth) {
 			
-			const slicedChunk = Array.from({length: sliceHeight}, e => Array(sliceWidth));
+			const slicedChunk: any = Array.from({length: sliceHeight}, e => Array(sliceWidth));
 			for (let sy = 0; sy < sliceHeight; sy++) {
 				for (let sx = 0; sx < sliceWidth; sx++) {
 					slicedChunk[sy][sx] = map[y + sy][x + sx];
 				}
 			}
-			slicedChunks.push(slicedChunk);
+
+			// getting actual map coordinates by chunk
+			const mapY = y / sliceHeight;
+			const mapX = x / sliceWidth;
+
+
+			const expandedChunkScreen = expandSlicedChunk(slicedChunk, 16, 24);
+
+
+			slicedChunks[`${mapX},${mapY},${0}`] = expandedChunkScreen;
 
 		}
 	}
@@ -358,7 +322,7 @@ const sliceMap = (map, sliceHeight, sliceWidth) => {
 }
 
 const expandSlicedChunk = (slicedChunk, desiredHeight, desiredWidth) => {
-	const expandedScreen = Array.from({length: desiredHeight}, e => Array(desiredWidth));
+	const expandedScreen = {};
 	const heightMultiplier = (1 / slicedChunk.length) * desiredHeight;
 	const widthMultiplier = (1 / slicedChunk[0].length) * desiredWidth;
 
@@ -375,29 +339,30 @@ const expandSlicedChunk = (slicedChunk, desiredHeight, desiredWidth) => {
 			const chunkY = Math.floor(y / heightMultiplier);
 			const chunkX = Math.floor(x / widthMultiplier);
 
-			expandedScreen[y][x] = slicedChunk[chunkY][chunkX];
+			
+
+			expandedScreen[`${letters[y]}${x}`] = { tile: {...slicedChunk[chunkY][chunkX]}, position: {x, y}};
 
 		}
 	}
 	
 	return expandedScreen;
-	
 }
 
-export const generateMap = (config: MapConfig) => {
+export const generateMap = (config: MapConfig): any => {
 	const MAP_HEIGHT = SCREEN_HEIGHT * config.screenMultiplier;
 	const MAP_WIDTH = SCREEN_WIDTH * config.screenMultiplier;
 
-	const canvas = document.createElement('canvas');
-	const context = canvas.getContext('2d');
-	const root = document.getElementById('svelte');
+	// const canvas = document.createElement('canvas');
+	// const context = canvas.getContext('2d');
+	// const root = document.getElementById('svelte');
 
 	const simplex = new SimplexNoise();
 	const moistSimplex = new SimplexNoise();
 
-	canvas.height = HEIGHT;
-	canvas.width = WIDTH;
-	canvas.style.backgroundColor = 'white';
+	// canvas.height = HEIGHT;
+	// canvas.width = WIDTH;
+	// canvas.style.backgroundColor = 'white';
 
 	const map = Array.from({length: MAP_HEIGHT}, e => Array(MAP_WIDTH));
 
@@ -421,26 +386,25 @@ export const generateMap = (config: MapConfig) => {
 
 			const biomeTile = getBiome(elevation, moisture);
 			map[y][x] = biomeTile; 
-
-			context.fillStyle = biomeTile.color;
-			context.fillRect(
-				x * (WIDTH / MAP_WIDTH),
-				y * (HEIGHT / MAP_HEIGHT),
-				BLOCK_SIZE / config.screenMultiplier,
-				BLOCK_SIZE / config.screenMultiplier
-			);
+			// 	if (context) {
+			// 	context.fillStyle = biomeTile.color;
+			// 	context.fillRect(
+			// 		x * (WIDTH / MAP_WIDTH),
+			// 		y * (HEIGHT / MAP_HEIGHT),
+			// 		BLOCK_SIZE / config.screenMultiplier,
+			// 		BLOCK_SIZE / config.screenMultiplier
+			// 	);
+			// }
 		}
 	}
 
-	root.append(canvas);
-
+	// if (root){
+	// 	root.append(canvas);
+	// }
 
 	const {screenSliceHeight, screenSliceWidth} = genSliceBoundaries(config.screenMultiplier, MAP_HEIGHT, MAP_WIDTH);
-	const slicedChunks = sliceMap(map, screenSliceHeight, screenSliceWidth);
-	slicedChunks.forEach((slicedChunk) => {
-		const screen = expandSlicedChunk(slicedChunk, SCREEN_HEIGHT, SCREEN_WIDTH);
-	});
-
+	const screenMap = sliceMap(map, screenSliceHeight, screenSliceWidth);
+	return screenMap;
 };
 
 
