@@ -1,4 +1,4 @@
-import { Entity } from '@core';
+import { Entity, MapState } from '@core';
 import Screen from './screen/screen';
 import { registerKeyEvents } from './keys/onKeyDown';
 import Server from './server/Server';
@@ -49,12 +49,26 @@ class Game {
 
     this.server.socket.on(
       'screen',
-      ({ screen, entities }: { screen: ScreenState; entities: Entity[] }) => {
+      ({ screen, entities, position }: { screen: ScreenState; entities: Entity[]; position: {y: number, x: number} }) => {
         const screenState: ScreenState = screen;
         this.screen.screenState = screenState;
         this.state.entities = entities;
+        console.log(position);
+        this.screen.mapLocation = position;
       }
     );
+
+
+    this.server.socket.on('map', ({height, width}) => {
+        this.screen.mapState = {height, width};
+      }
+    );
+
+    this.server.socket.on('screenChange', (screenPos: any) => {
+      
+    });
+
+
 
     registerKeyEvents(this.server);
 
@@ -71,9 +85,9 @@ class Game {
     const fps = Math.round(1 / this.renderState.secondsPassed);
 
     // Draw FPS counter on screen
-    if (this.settings.showFPS) {
-      this.screen.drawFPS(fps);
-    }
+    // if (this.settings.showFPS) {
+    //   this.screen.drawFPS(fps);
+    // }
 
     this.screen.draw(this.state.entities, fps);
 

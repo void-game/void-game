@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { Entity, Keys, ScreenState } from '@core';
 import { Player } from '../entities';
-import { screenMap } from '.';
 
 export interface MapPosition {
   x: number;
@@ -25,10 +24,10 @@ export class Screen {
   private _io: Server;
   public position: MapPosition;
 
-  constructor(position: MapPosition, io: Server) {
+  constructor(position: MapPosition, screenState: ScreenState, io: Server) {
     this.position = position;
     this._key = `${position.x},${position.y},${position.z}`;
-    this._screenState = screenMap[this._key];
+    this._screenState = screenState;
     this._io = io;
 
     setInterval(() => {
@@ -50,9 +49,7 @@ export class Screen {
       client.join(this._key);
       this._entities.push(newPlayer.entity);
 
-      console.log(this._screenState);
-
-      client.emit('screen', { screen: this._screenState, entities: this._entities });
+      client.emit('screen', { screen: this._screenState, entities: this._entities, position: {y: this.position.y, x: this.position.x}});
 
       client.on('keys', (keys: any) => {
         newPlayer.keys = keys;

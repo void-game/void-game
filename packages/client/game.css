@@ -6,6 +6,12 @@
   background-color: var(--atomic-purple); 
 }
 
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 
 h1 {
   display: flex;

@@ -1,5 +1,5 @@
 import { tileMap, TileName } from '../tiles';
-import { ScreenConfigs, ScreenState } from './Screen.types';
+import { ScreenConfigs, ScreenState } from './screen.types';
 
 // 24 x 16
 

@@ -14,5 +14,4 @@ __exportStar(require("./entities"), exports);
 __exportStar(require("./environment"), exports);
 __exportStar(require("./keys"), exports);
 __exportStar(require("./collision"), exports);
-__exportStar(require("./generate"), exports);
 //# sourceMappingURL=index.js.map

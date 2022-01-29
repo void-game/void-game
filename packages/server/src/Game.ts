@@ -1,22 +1,24 @@
 import { Express } from 'express';
 import { Server, Socket } from 'socket.io';
-import { Screen, screenMap } from './screens';
+import { Screen } from './screens';
 import { Database, SavedPlayer } from './db';
 import { Player } from './entities';
 import {
   CollisionLayer,
   Keys,
-  otherScreen,
-  ireland,
-  afghanistan,
-  defaultScreen,
-  iraq,
+  ScreenState,
+  MapType,
+  generateMap,
 } from '@core';
 import EventEmitter from 'events';
 
 interface SavedClient {
   player?: SavedPlayer;
   client: Socket;
+}
+
+interface ScreenMap {
+  [key: string]: ScreenState;
 }
 
 const HOST = '0.0.0.0';
@@ -30,29 +32,36 @@ const getNextScreenKey = (screenPosition: { x: number; y: number; z: number }, d
     case Keys.RIGHT:
       return `${x + 1},${y},${z}`;
     case Keys.DOWN:
-      return `${x},${y - 1},${z}`;
-    case Keys.UP:
       return `${x},${y + 1},${z}`;
+    case Keys.UP:
+      return `${x},${y - 1},${z}`;
     case Keys.LEFT:
       return `${x - 1},${y},${z}`;
   }
 };
 
-
-
-const buildNewScreens = (io: any) => {
+const buildGameScreens = (io: Server, screenMap: ScreenMap) => {
   const screens = {};
   Object.entries(screenMap).forEach(([k, v]) => {
-    const coords = k.split(',');  
-    screens[k] = new Screen({ x: parseInt(coords[0], 10), y: parseInt(coords[1], 10), z: 0}, io);
+    let [x,y] = k.split(',');
+    const locX = parseInt(x, 10);
+    const locY = parseInt(y, 10);
+    const locZ = 0;
+    screens[k] = new Screen({ x: locX, y: locY, z: locZ}, screenMap[k], io);
   });
   return screens;
 }
 
+const mapConfig = { screenMultiplier: 25, frequency: 10, redistribution: 1.9, mapType: MapType.GAME_MAP };
 
-
+interface ScreenData {
+  screenMap: ScreenMap,
+  screenMapHeight: number,
+  screenMapWidth: number,
+}
 export class Game {
   private map;
+  private screenData: ScreenData;
   private server;
   private io: Server;
   private clients: { [key: string]: SavedClient } = {};
@@ -70,16 +79,22 @@ export class Game {
     });
 
     const io = this.io;
+
+    const { screenMap, screenMapHeight, screenMapWidth } = generateMap(mapConfig);
+
+    this.screenData = {
+      screenMap,
+      screenMapHeight,
+      screenMapWidth,
+    };
+
     const defaultMap = {
-      ...buildNewScreens(io),
+      ...buildGameScreens(io, this.screenData.screenMap),
       getScreenByCoordinates(x: number, y: number, z: number): Screen | undefined {
         return this[`${x},${y},${z}`];
       },
       getScreenByKey(screenKey: string): Screen | undefined {
         return this[screenKey];
-      },
-      addScreen(pos: { x: number; y: number; z: number }) {
-        this[`${pos.x},${pos.y},${pos.z}`] = new Screen(pos, io);
       },
     };
 
@@ -117,6 +132,8 @@ export class Game {
           ScreenListener,
           client.id
         );
+
+        client.emit('map', {height: this.screenData.screenMapHeight, width: this.screenData.screenMapWidth});
 
         ScreenListener.on(
           `change-${client.id}`,

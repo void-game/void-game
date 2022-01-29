@@ -1,3 +1,3 @@
 export * from './defaultScreen';
-export * from './Screen.types';
+export * from './screen.types';
 export * from './screenUtils';
